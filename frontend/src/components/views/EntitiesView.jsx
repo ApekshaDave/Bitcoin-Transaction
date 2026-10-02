@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Users, ShieldAlert, Wallet, Search, Tag, ExternalLink } from 'lucide-react';
+import { Users, ShieldAlert, Wallet, Search, Tag, ExternalLink, AlertTriangle } from 'lucide-react';
 
 export default function EntitiesView({ activeDataset = 'synthetic', onViewGraphTarget }) {
   const [wallets, setWallets] = useState([]);
   const [loadingWallets, setLoadingWallets] = useState(false);
   const [walletClassFilter, setWalletClassFilter] = useState('ALL');
   const [searchAddr, setSearchAddr] = useState('');
+  const [status, setStatus] = useState('LOADING');
 
   useEffect(() => {
     fetchWallets();
@@ -14,17 +15,27 @@ export default function EntitiesView({ activeDataset = 'synthetic', onViewGraphT
   const fetchWallets = async () => {
     setLoadingWallets(true);
     try {
-      let url = 'http://127.0.0.1:8000/api/v1/wallets?limit=50';
+      let url = `http://127.0.0.1:8000/api/v1/wallets?dataset=${activeDataset || 'synthetic'}&limit=50`;
       if (walletClassFilter !== 'ALL') {
         url += `&class_label=${walletClassFilter}`;
       }
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
-        setWallets(data);
+        if (data.status === 'NOT_PROVIDED') {
+          setStatus('NOT_PROVIDED');
+          setWallets([]);
+        } else {
+          setStatus('AVAILABLE');
+          const walletList = Array.isArray(data) ? data : (data.wallets || []);
+          setWallets(walletList);
+        }
+      } else {
+        setWallets([]);
       }
     } catch (e) {
       console.error('Failed to fetch wallets:', e);
+      setWallets([]);
     } finally {
       setLoadingWallets(false);
     }
@@ -36,8 +47,8 @@ export default function EntitiesView({ activeDataset = 'synthetic', onViewGraphT
     { entity_id: 'ENTITY_C03', address_count: 2, detected_pattern: 'Normal Multi-Sig Wallet', risk_score: 18.0, confidence: 0.95, related_ips: ['192.168.1.100'], countries: ['IN'], total_txs: 6 },
   ];
 
-  const filteredWallets = wallets.filter(w => 
-    w.address.toLowerCase().includes(searchAddr.toLowerCase())
+  const filteredWallets = (Array.isArray(wallets) ? wallets : []).filter(w => 
+    w && w.address && w.address.toLowerCase().includes(searchAddr.toLowerCase())
   );
 
   const getWalletBadge = (cLabel) => {
@@ -62,6 +73,30 @@ export default function EntitiesView({ activeDataset = 'synthetic', onViewGraphT
       </span>
     );
   };
+
+  if (activeDataset === 'elliptic_v1' || status === 'NOT_PROVIDED') {
+    return (
+      <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
+        <div className="bg-[#0B1626] border border-[#101C2E] p-4 rounded-xl flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider flex items-center space-x-2">
+              <Users className="w-4 h-4 text-[#22C55E]" />
+              <span>Inferred Address Entity Clusters</span>
+            </h2>
+            <p className="text-[11px] text-slate-400 font-mono">Dataset Scope: Elliptic v1 Benchmark</p>
+          </div>
+        </div>
+
+        <div className="bg-[#0B1626] border border-amber-500/30 rounded-xl p-8 text-center space-y-3">
+          <AlertTriangle className="w-10 h-10 text-amber-400 mx-auto" />
+          <h3 className="text-base font-mono font-bold text-amber-300">Entity & Wallet Layer Not Provided</h3>
+          <p className="text-xs font-mono text-slate-400 max-w-xl mx-auto">
+            Wallet and entity datasets are not provided by the Elliptic v1 benchmark. Elliptic v1 contains transaction-level nodes without native address or entity clustering ground truth.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
@@ -108,14 +143,22 @@ export default function EntitiesView({ activeDataset = 'synthetic', onViewGraphT
         ))}
       </div>
 
-      {/* Section 2: Elliptic v2 Heterogeneous Wallet Layer */}
+      {/* Section 2: Wallet Layer */}
       <div className="bg-[#0B1626] border border-[#101C2E] p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider flex items-center space-x-2">
             <Wallet className="w-4 h-4 text-cyan-400" />
-            <span>Elliptic v2 Wallet & Entity Layer Analysis</span>
+            <span>
+              {activeDataset === 'synthetic'
+                ? 'SIH Synthetic Wallet & Address Layer'
+                : 'Elliptic v2 Wallet & Entity Layer Analysis'}
+            </span>
           </h2>
-          <p className="text-[11px] text-slate-400 font-mono">Ground-truth wallet classification & 57 graph feature metrics</p>
+          <p className="text-[11px] text-slate-400 font-mono">
+            {activeDataset === 'synthetic'
+              ? 'Derived synthetic addresses and participation metrics'
+              : 'Ground-truth wallet classification & 57 graph feature metrics'}
+          </p>
         </div>
 
         <div className="flex items-center space-x-3">
@@ -164,15 +207,15 @@ export default function EntitiesView({ activeDataset = 'synthetic', onViewGraphT
               </tr>
             </thead>
             <tbody className="divide-y divide-[#101C2E]">
-              {filteredWallets.map((w) => (
-                <tr key={w.address} className="hover:bg-[#101C2E]/50 transition">
+              {filteredWallets.map((w, idx) => (
+                <tr key={w.address || idx} className="hover:bg-[#101C2E]/50 transition">
                   <td className="py-3 px-4 text-cyan-300 font-bold break-all max-w-xs">{w.address}</td>
                   <td className="py-3 px-4">{getWalletBadge(w.class_label)}</td>
                   <td className="py-3 px-4 text-slate-300">{w.num_txs_as_sender}</td>
                   <td className="py-3 px-4 text-slate-300">{w.num_txs_as_receiver}</td>
-                  <td className="py-3 px-4 font-bold text-white">{w.btc_transacted_total.toFixed(4)} BTC</td>
-                  <td className="py-3 px-4 text-slate-400">{w.fees_total.toFixed(5)}</td>
-                  <td className="py-3 px-4 text-cyan-400">{w.transacted_w_address_total}</td>
+                  <td className="py-3 px-4 font-bold text-white">{(w.btc_transacted_total || 0).toFixed(4)} BTC</td>
+                  <td className="py-3 px-4 text-slate-400">{(w.fees_total || 0).toFixed(5)}</td>
+                  <td className="py-3 px-4 text-cyan-400">{w.transacted_w_address_total || 0}</td>
                   <td className="py-3 px-4 text-right">
                     <button
                       onClick={() => onViewGraphTarget && onViewGraphTarget(w.address)}
@@ -187,7 +230,7 @@ export default function EntitiesView({ activeDataset = 'synthetic', onViewGraphT
               {filteredWallets.length === 0 && (
                 <tr>
                   <td colSpan="8" className="py-8 text-center text-slate-500">
-                    {loadingWallets ? 'Loading wallets from Elliptic v2...' : 'No wallets found for selected dataset/filter.'}
+                    {loadingWallets ? 'Loading wallets...' : 'No wallets found for selected dataset/filter.'}
                   </td>
                 </tr>
               )}
