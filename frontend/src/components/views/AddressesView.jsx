@@ -1,13 +1,64 @@
-import React from 'react';
-import { Wallet, ShieldAlert, Users, Network } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Wallet, ShieldAlert, AlertTriangle, CheckCircle2, ArrowRightLeft } from 'lucide-react';
 
-export default function AddressesView({ onViewGraphTarget }) {
-  const sampleAddresses = [
-    { address: '1InputAddr_bc1q9x29a40b799d51fd88dc3c482e7d91af960b', entity_id: 'ENTITY_C12', tx_count: 14, total_received: 42.85, total_sent: 42.80, turnover: 0.998, degree: 18, risk_score: 85.0, confidence: 0.88 },
-    { address: '3OutputAddr_bc1q7y0124510258102451025810245102581024', entity_id: 'ENTITY_C12', tx_count: 2, total_received: 0.05, total_sent: 0.00, turnover: 0.000, degree: 3, risk_score: 20.0, confidence: 0.95 },
-    { address: 'bc1qpeeling_change_addr_90124510258102451025810245', entity_id: 'ENTITY_C08', tx_count: 9, total_received: 18.50, total_sent: 18.10, turnover: 0.978, degree: 12, risk_score: 91.2, confidence: 0.89 },
-    { address: 'bc1qnormal_user_addr_402151528419a421bc08912e76f4', entity_id: 'Unclustered', tx_count: 3, total_received: 1.20, total_sent: 0.50, turnover: 0.416, degree: 4, risk_score: 12.0, confidence: 0.92 },
-  ];
+export default function AddressesView({ activeDataset, onViewGraphTarget }) {
+  const [wallets, setWallets] = useState([]);
+  const [status, setStatus] = useState('LOADING');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    fetch(`http://localhost:8000/api/v1/wallets?dataset=${activeDataset || 'synthetic'}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isMounted) return;
+        if (data.status === 'NOT_PROVIDED') {
+          setStatus('NOT_PROVIDED');
+          setMessage(data.message || 'N/A — wallet dataset not provided by Elliptic v1 benchmark');
+          setWallets([]);
+        } else {
+          setStatus('AVAILABLE');
+          setWallets(data.wallets || []);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.error('Error fetching wallets:', err);
+        setStatus(activeDataset === 'elliptic_v1' ? 'NOT_PROVIDED' : 'ERROR');
+        setMessage(activeDataset === 'elliptic_v1' ? 'N/A — wallet dataset not provided by Elliptic v1 benchmark' : 'Error loading wallet data');
+        setWallets([]);
+        setLoading(false);
+      });
+
+    return () => { isMounted = false; };
+  }, [activeDataset]);
+
+  if (activeDataset === 'elliptic_v1' || status === 'NOT_PROVIDED') {
+    return (
+      <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
+        <div className="bg-[#0B1626] border border-[#101C2E] p-4 rounded-xl flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider flex items-center space-x-2">
+              <Wallet className="w-4 h-4 text-[#8B5CF6]" />
+              <span>Bitcoin Address Ledger & Clustering</span>
+            </h2>
+            <p className="text-[11px] text-slate-400 font-mono">Dataset Scope: Elliptic v1 Benchmark</p>
+          </div>
+        </div>
+
+        <div className="bg-[#0B1626] border border-amber-500/30 rounded-xl p-8 text-center space-y-3">
+          <AlertTriangle className="w-10 h-10 text-amber-400 mx-auto" />
+          <h3 className="text-base font-mono font-bold text-amber-300">Wallet Dataset Not Provided</h3>
+          <p className="text-xs font-mono text-slate-400 max-w-xl mx-auto">
+            Wallet/address dataset not provided by Elliptic v1 benchmark. Elliptic v1 is a transaction-level benchmark dataset without native address or wallet mappings.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
@@ -17,52 +68,67 @@ export default function AddressesView({ onViewGraphTarget }) {
             <Wallet className="w-4 h-4 text-[#8B5CF6]" />
             <span>Bitcoin Address Ledger & Clustering</span>
           </h2>
-          <p className="text-[11px] text-slate-400 font-mono">Address turnover rates and entity mappings</p>
+          <p className="text-[11px] text-slate-400 font-mono">
+            {activeDataset === 'synthetic'
+              ? 'Derived synthetic addresses from blockchain transaction inputs & outputs'
+              : 'Elliptic++ v2 Heterogeneous Wallet & Address Dataset'}
+          </p>
+        </div>
+        <div className="text-xs font-mono text-purple-400 bg-purple-500/10 px-3 py-1.5 rounded-lg border border-purple-500/20">
+          Total Records: {loading ? '...' : wallets.length}
         </div>
       </div>
 
       <div className="bg-[#0B1626] border border-[#101C2E] rounded-xl overflow-hidden shadow-md">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left font-mono text-xs">
-            <thead className="bg-[#050B14] text-slate-400 border-b border-[#101C2E] uppercase text-[10px]">
-              <tr>
-                <th className="py-3 px-4">Address</th>
-                <th className="py-3 px-4">Inferred Entity ID</th>
-                <th className="py-3 px-4">TX Count</th>
-                <th className="py-3 px-4">Received / Sent (BTC)</th>
-                <th className="py-3 px-4">Turnover Ratio</th>
-                <th className="py-3 px-4">Graph Degree</th>
-                <th className="py-3 px-4">Risk Score</th>
-                <th className="py-3 px-4 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#101C2E]">
-              {sampleAddresses.map((addr) => (
-                <tr key={addr.address} className="hover:bg-[#101C2E]/50 transition">
-                  <td className="py-3 px-4 text-cyan-300 font-bold break-all max-w-xs">{addr.address}</td>
-                  <td className="py-3 px-4 text-emerald-400 font-semibold">{addr.entity_id}</td>
-                  <td className="py-3 px-4 text-slate-300">{addr.tx_count}</td>
-                  <td className="py-3 px-4 text-white font-bold">{addr.total_received} / {addr.total_sent}</td>
-                  <td className="py-3 px-4 text-slate-300">{addr.turnover.toFixed(3)}</td>
-                  <td className="py-3 px-4 text-slate-300">{addr.degree}</td>
-                  <td className="py-3 px-4">
-                    <span className={`font-bold ${addr.risk_score >= 75 ? 'text-rose-400' : 'text-emerald-400'}`}>
-                      {addr.risk_score.toFixed(1)} / 100
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-right">
-                    <button
-                      onClick={() => onViewGraphTarget && onViewGraphTarget(addr.address)}
-                      className="px-2.5 py-1 bg-[#2196F3]/20 text-[#22D3EE] hover:bg-[#2196F3] hover:text-white rounded-lg border border-[#2196F3]/40 text-[10px] transition"
-                    >
-                      Graph Subgraph
-                    </button>
-                  </td>
+        {loading ? (
+          <div className="p-8 text-center text-slate-400 font-mono text-xs">Loading address records...</div>
+        ) : wallets.length === 0 ? (
+          <div className="p-8 text-center text-slate-400 font-mono text-xs">No address records available.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left font-mono text-xs">
+              <thead className="bg-[#050B14] text-slate-400 border-b border-[#101C2E] uppercase text-[10px]">
+                <tr>
+                  <th className="py-3 px-4">Address</th>
+                  <th className="py-3 px-4">Dataset</th>
+                  <th className="py-3 px-4">Class Label</th>
+                  <th className="py-3 px-4">Sender TXs</th>
+                  <th className="py-3 px-4">Receiver TXs</th>
+                  <th className="py-3 px-4">Total BTC Transacted</th>
+                  <th className="py-3 px-4 text-right">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-[#101C2E]">
+                {wallets.map((w, idx) => (
+                  <tr key={w.address || idx} className="hover:bg-[#101C2E]/50 transition">
+                    <td className="py-3 px-4 text-cyan-300 font-bold break-all max-w-xs">{w.address}</td>
+                    <td className="py-3 px-4 text-slate-400 uppercase text-[10px]">{w.dataset_source || activeDataset}</td>
+                    <td className="py-3 px-4">
+                      {w.class_label === 1 ? (
+                        <span className="text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded text-[10px]">Class 1 (Illicit)</span>
+                      ) : w.class_label === 2 ? (
+                        <span className="text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded text-[10px]">Class 2 (Licit)</span>
+                      ) : (
+                        <span className="text-slate-400 bg-slate-500/10 px-2 py-0.5 rounded text-[10px]">Class 3 (Unknown)</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-slate-300">{w.num_txs_as_sender}</td>
+                    <td className="py-3 px-4 text-slate-300">{w.num_txs_as_receiver}</td>
+                    <td className="py-3 px-4 text-white font-bold">{typeof w.btc_transacted_total === 'number' ? w.btc_transacted_total.toFixed(4) : w.btc_transacted_total} BTC</td>
+                    <td className="py-3 px-4 text-right">
+                      <button
+                        onClick={() => onViewGraphTarget && onViewGraphTarget(w.address)}
+                        className="px-2.5 py-1 bg-[#2196F3]/20 text-[#22D3EE] hover:bg-[#2196F3] hover:text-white rounded-lg border border-[#2196F3]/40 text-[10px] transition"
+                      >
+                        Graph Subgraph
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

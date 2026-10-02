@@ -211,7 +211,10 @@ class EllipticDatasetLoader:
 
     def load_v2_wallets(self, v2_dir: str = DEFAULT_V2_DIR, max_wallets: Optional[int] = None) -> List[Dict[str, Any]]:
         """Loads Elliptic v2 wallet/entity classification and features."""
+        classes_path = os.path.join(v2_dir, "wallets_classes.csv")
+        features_path = os.path.join(v2_dir, "wallets_features.csv")
         combined_path = os.path.join(v2_dir, "wallets_features_classes_combined.csv")
+
         wallets = []
 
         if os.path.exists(combined_path):
@@ -223,11 +226,30 @@ class EllipticDatasetLoader:
                     "time_step": int(r.get("Time step", 1)),
                     "class_label": int(r.get("class", 3)),
                     "num_txs_as_sender": float(r.get("num_txs_as_sender", 0)),
-                    "num_txs_as_receiver": float(r.get("num_txs_as receiver", 0)),
+                    "num_txs_as_receiver": float(r.get("num_txs_as receiver", r.get("num_txs_as_receiver", 0))),
                     "btc_transacted_total": float(r.get("btc_transacted_total", 0.0)),
                     "fees_total": float(r.get("fees_total", 0.0)),
                     "transacted_w_address_total": int(r.get("transacted_w_address_total", 0)),
                     "lifetime_in_blocks": float(r.get("lifetime_in_blocks", 0))
+                })
+        elif os.path.exists(classes_path) and os.path.exists(features_path):
+            classes_df = pd.read_csv(classes_path)
+            class_map = dict(zip(classes_df["address"].astype(str), classes_df["class"].astype(int)))
+
+            features_df = pd.read_csv(features_path, nrows=max_wallets)
+            for _, r in features_df.iterrows():
+                addr = str(r["address"])
+                wallets.append({
+                    "address": addr,
+                    "dataset_source": "elliptic_v2",
+                    "time_step": int(r.get("Time step", 1)),
+                    "class_label": int(class_map.get(addr, 3)),
+                    "num_txs_as_sender": 0.0,
+                    "num_txs_as_receiver": 0.0,
+                    "btc_transacted_total": 0.0,
+                    "fees_total": 0.0,
+                    "transacted_w_address_total": 0,
+                    "lifetime_in_blocks": 0.0
                 })
 
         return wallets

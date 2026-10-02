@@ -214,8 +214,18 @@ export default function OverviewView({ kpiData, alerts, transactions, onSelectAl
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-bold text-white font-mono">{(kpiData?.total_wallets ?? 0).toLocaleString()}</div>
-            <div className="text-[10px] text-purple-400 font-mono mt-1">Entity Layer</div>
+            <div className="text-2xl font-bold text-white font-mono">
+              {activeDataset === 'elliptic_v1' || kpiData?.wallet_status === 'NOT_PROVIDED' || kpiData?.total_wallets === 'N/A'
+                ? 'N/A'
+                : (kpiData?.total_wallets ?? 0).toLocaleString()}
+            </div>
+            <div className="text-[10px] text-purple-400 font-mono mt-1">
+              {activeDataset === 'elliptic_v1'
+                ? 'Not provided by v1 benchmark'
+                : activeDataset === 'synthetic'
+                ? 'Derived Synthetic Addresses'
+                : 'Entity Layer'}
+            </div>
           </div>
         </div>
 

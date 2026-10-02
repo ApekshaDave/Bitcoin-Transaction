@@ -129,10 +129,10 @@ class DatabaseManager:
             )
             """)
 
-            # Wallets / Entity Layer Table
+            # Wallets / Entity Unique Addresses Table
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS wallets (
-                address TEXT PRIMARY KEY,
+                address TEXT,
                 dataset_source TEXT DEFAULT 'elliptic_v2',
                 time_step INTEGER DEFAULT 1,
                 class_label INTEGER DEFAULT 3,
@@ -142,9 +142,31 @@ class DatabaseManager:
                 fees_total REAL DEFAULT 0.0,
                 transacted_w_address_total INTEGER DEFAULT 0,
                 lifetime_in_blocks REAL DEFAULT 0,
-                risk_score REAL DEFAULT 0.0
+                risk_score REAL DEFAULT 0.0,
+                PRIMARY KEY(address, dataset_source)
             )
             """)
+
+            # Wallet Temporal Features Table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS wallet_temporal_features (
+                address TEXT,
+                dataset_source TEXT DEFAULT 'elliptic_v2',
+                time_step INTEGER,
+                class_label INTEGER DEFAULT 3,
+                num_txs_as_sender REAL DEFAULT 0,
+                num_txs_as_receiver REAL DEFAULT 0,
+                btc_transacted_total REAL DEFAULT 0.0,
+                fees_total REAL DEFAULT 0.0,
+                transacted_w_address_total INTEGER DEFAULT 0,
+                lifetime_in_blocks REAL DEFAULT 0,
+                risk_score REAL DEFAULT 0.0,
+                PRIMARY KEY(address, dataset_source, time_step)
+            )
+            """)
+
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_wallets_ds ON wallets(dataset_source)")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_wallet_temp_ds_ts ON wallet_temporal_features(dataset_source, time_step)")
 
             # Dataset Metadata Table
             cursor.execute("""
@@ -200,7 +222,7 @@ class DatabaseManager:
         """Cleans all existing records."""
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            for tbl in ["alerts", "entity_address_mapping", "entity_clusters", "network_observations", "tx_outputs", "tx_inputs", "transactions", "wallets", "dataset_metadata"]:
+            for tbl in ["alerts", "entity_address_mapping", "entity_clusters", "network_observations", "tx_outputs", "tx_inputs", "transactions", "wallets", "wallet_temporal_features", "dataset_metadata"]:
                 cursor.execute(f"DELETE FROM {tbl}")
             conn.commit()
 
@@ -306,6 +328,32 @@ class DatabaseManager:
                     alt["alert_id"], alt.get("target_type", "TRANSACTION"), alt["target_id"],
                     alt.get("risk_score", 0.0), alt.get("confidence", 0.5), alt.get("alert_type", "ANOMALY"),
                     alt.get("created_at", "N/A"), ev_str, d_source
+                ))
+            conn.commit()
+
+    def save_wallets(self, wallets: List[Dict[str, Any]], dataset_source: str = "elliptic_v2") -> None:
+        """Stores or updates wallet records in SQLite database."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            for w in wallets:
+                cursor.execute("""
+                INSERT OR REPLACE INTO wallets (
+                    address, dataset_source, time_step, class_label,
+                    num_txs_as_sender, num_txs_as_receiver, btc_transacted_total,
+                    fees_total, transacted_w_address_total, lifetime_in_blocks, risk_score
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    str(w.get("address", "")),
+                    w.get("dataset_source", dataset_source),
+                    int(w.get("time_step", 1)),
+                    int(w.get("class_label", 3)),
+                    float(w.get("num_txs_as_sender", 0)),
+                    float(w.get("num_txs_as_receiver", 0)),
+                    float(w.get("btc_transacted_total", 0.0)),
+                    float(w.get("fees_total", 0.0)),
+                    int(w.get("transacted_w_address_total", 0)),
+                    float(w.get("lifetime_in_blocks", 0)),
+                    float(w.get("risk_score", 0.0))
                 ))
             conn.commit()
 

@@ -238,16 +238,40 @@ def get_transaction_detail(txid: str):
 
 @app.get("/api/v1/wallets")
 def get_wallets(
+    dataset: Optional[str] = Query(default=None),
+    dataset_source: Optional[str] = Query(default=None),
     class_label: Optional[int] = Query(default=None, description="1: Illicit, 2: Licit, 3: Unknown"),
     limit: int = Query(default=100, ge=1, le=1000),
     offset: int = Query(default=0, ge=0)
 ):
     """
-    Returns Elliptic v2 wallet entities with features and ground truth class labels.
+    Returns dataset-scoped wallet entities.
+    - Elliptic v1: Returns NOT_PROVIDED status ("N/A — wallet dataset not provided").
+    - Elliptic v2: Returns loaded Elliptic++ wallet entities.
+    - SIH Synthetic: Returns derived address records from transaction inputs/outputs.
     """
+    target_ds = dataset or dataset_source or pipeline_service.active_dataset_source
+
+    if target_ds == "elliptic_v1":
+        return {
+            "dataset_source": "elliptic_v1",
+            "status": "NOT_PROVIDED",
+            "message": "N/A — wallet dataset not provided by Elliptic v1 benchmark",
+            "total_count": "N/A",
+            "wallets": []
+        }
+
+    if target_ds in ["synthetic", "sih_synthetic"]:
+        derived = pipeline_service.get_synthetic_derived_wallets(limit=limit, offset=offset)
+        return {
+            "dataset_source": "sih_synthetic",
+            "status": "AVAILABLE",
+            "total_count": len(derived),
+            "wallets": derived
+        }
+
     query = "SELECT * FROM wallets WHERE 1=1"
     params = []
-
     if class_label is not None:
         query += " AND class_label = ?"
         params.append(class_label)
@@ -257,8 +281,14 @@ def get_wallets(
 
     with db_manager.get_connection() as conn:
         rows = conn.execute(query, params).fetchall()
+        w_list = [dict(r) for r in rows]
 
-    return [dict(r) for r in rows]
+    return {
+        "dataset_source": "elliptic_v2",
+        "status": "AVAILABLE",
+        "total_count": len(w_list),
+        "wallets": w_list
+    }
 
 @app.get("/api/v1/ml/status")
 def get_ml_status(dataset: Optional[str] = Query(default=None)):

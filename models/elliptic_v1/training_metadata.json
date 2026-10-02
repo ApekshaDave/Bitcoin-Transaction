@@ -1,6 +1,6 @@
 {
   "dataset_source": "elliptic_v1",
-  "trained_at": "2026-10-02T10:55:33.037811Z",
+  "trained_at": "2026-10-02T11:33:56.802489Z",
   "model_version": "1.0.0",
   "n_train_samples": 500,
   "n_test_samples": 500,
