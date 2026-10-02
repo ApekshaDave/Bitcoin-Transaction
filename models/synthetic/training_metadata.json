@@ -1,6 +1,6 @@
 {
   "dataset_source": "synthetic",
-  "trained_at": "2026-10-02T11:30:47.666563Z",
+  "trained_at": "2026-10-02T14:14:31.070926Z",
   "model_version": "1.0.0",
   "n_train_samples": 42,
   "n_test_samples": 42,

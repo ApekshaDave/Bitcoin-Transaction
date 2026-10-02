@@ -3,14 +3,14 @@
     "precision": 0.0,
     "recall": 0.0,
     "f1_score": 0.0,
-    "roc_auc": 0.5,
-    "pr_auc": 0.0,
-    "evaluated_samples": 145,
+    "roc_auc": 0.1684,
+    "pr_auc": 0.0042,
+    "evaluated_samples": 286,
     "label_note": "Evaluated strictly on Class 1 (Illicit) vs Class 2 (Licit), Class 3 (Unknown) excluded"
   },
   "clustering": {
-    "num_clusters": 16,
-    "noise_percentage": 93.4,
-    "silhouette_score": -0.3356
+    "num_clusters": 32,
+    "noise_percentage": 91.8,
+    "silhouette_score": -0.355
   }
 }

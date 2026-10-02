@@ -392,19 +392,26 @@ export default function GraphExplorerView({ activeDataset = 'synthetic', initial
 
         {/* Legend */}
         <div className="absolute bottom-4 left-4 bg-[#08111F]/90 p-3 rounded-xl border border-[#101C2E] text-xs space-y-1.5 backdrop-blur z-10 shadow-lg">
-          <div className="text-[10px] text-slate-400 font-bold uppercase mb-1 border-b border-[#101C2E] pb-1">
-            {activeDataset === 'synthetic' ? 'SIH Synthetic Graph Legend' : 'Elliptic Benchmark Legend'}
+          <div className="text-[10px] text-slate-400 font-bold uppercase mb-1 border-b border-[#101C2E] pb-1 flex items-center justify-between gap-2">
+            <span>{activeDataset === 'synthetic' ? 'SIH Synthetic Graph Legend' : 'Elliptic Benchmark Legend'}</span>
+            <span className="text-[9px] font-mono text-purple-400 font-bold">PROVENANCE AWARE</span>
           </div>
           
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
-            <div className="flex items-center space-x-2"><span className="w-3 h-3 rounded-full bg-[#EF4444]"></span><span>IP Address</span></div>
-            <div className="flex items-center space-x-2"><span className="w-3 h-3 rotate-45 bg-[#F59E0B]"></span><span>Transaction</span></div>
+            <div className="flex items-center space-x-2"><span className="w-3 h-3 rounded-full bg-[#EF4444]"></span><span>{activeDataset === 'synthetic' ? 'Synthetic IP Node' : 'Synthetic Network Node'}</span></div>
+            <div className="flex items-center space-x-2"><span className="w-3 h-3 rotate-45 bg-[#F59E0B]"></span><span>Blockchain Transaction</span></div>
             <div className="flex items-center space-x-2"><span className="w-3 h-3 rounded-sm bg-[#2196F3]"></span><span>Bitcoin Address</span></div>
             <div className="flex items-center space-x-2"><span className="w-3 h-3 rounded bg-[#22C55E]"></span><span>Inferred Entity</span></div>
           </div>
 
+          {activeDataset !== 'synthetic' && (
+            <div className="text-[9px] text-purple-300 font-mono pt-1">
+              * IP nodes are project-generated synthetic simulation, not native Elliptic benchmark data.
+            </div>
+          )}
+
           <div className="border-t border-[#101C2E] pt-1.5 mt-1 flex flex-wrap gap-2 text-[10px] text-slate-400">
-            <span className="text-rose-400 font-bold">--- OBSERVED</span>
+            <span className="text-purple-400 font-bold">--- SYNTHETIC SIMULATION</span>
             <span className="text-cyan-400 font-bold">── INPUT</span>
             <span className="text-amber-400 font-bold">── OUTPUT</span>
             <span className="text-emerald-400 font-bold">... ENTITY</span>
@@ -424,6 +431,17 @@ export default function GraphExplorerView({ activeDataset = 'synthetic', initial
                 <span className="text-[10px] text-slate-400 uppercase">Node Identifier:</span>
                 <div className="text-white font-bold break-all">{selectedNode.id}</div>
               </div>
+
+              {(selectedNode.node_type === 'IP' || selectedNode.type === 'IP' || selectedNode.id.startsWith('ip:')) && (
+                <div className="bg-purple-950/40 border border-purple-500/30 p-2.5 rounded-lg space-y-1">
+                  <div className="text-[10px] font-bold text-purple-300 uppercase">Network Telemetry Provenance</div>
+                  <div className="text-[11px] text-purple-200 font-mono">
+                    {activeDataset === 'synthetic'
+                      ? 'Synthetic IP Observation (SIH Network Generator)'
+                      : 'Project-Generated Synthetic Network Simulation Node'}
+                  </div>
+                </div>
+              )}
 
               {selectedNode.txid && (
                 <div>

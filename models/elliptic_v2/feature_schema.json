@@ -186,7 +186,7 @@
     "out_BTC_total"
   ],
   "scaling_method": "StandardScaler",
-  "train_samples": 500,
-  "test_samples": 500,
+  "train_samples": 50,
+  "test_samples": 50,
   "temporal_split_time_step": 1
 }

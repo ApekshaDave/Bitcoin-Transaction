@@ -105,6 +105,12 @@ class DatabaseManager:
                 asn TEXT,
                 time_delta REAL,
                 network_event_type TEXT,
+                dataset_source TEXT DEFAULT 'synthetic',
+                network_data_source TEXT DEFAULT 'synthetic',
+                network_data_provenance TEXT DEFAULT 'project_generated',
+                network_data_scope TEXT DEFAULT 'synthetic_network_simulation',
+                geo_source TEXT DEFAULT 'synthetic',
+                asn_source TEXT DEFAULT 'synthetic',
                 FOREIGN KEY(txid) REFERENCES transactions(txid)
             )
             """)
@@ -216,6 +222,21 @@ class DatabaseManager:
             if "dataset_source" not in alert_cols:
                 cursor.execute("ALTER TABLE alerts ADD COLUMN dataset_source TEXT DEFAULT 'synthetic'")
 
+            cursor.execute("PRAGMA table_info(network_observations)")
+            net_cols = [row[1] for row in cursor.fetchall()]
+            if "dataset_source" not in net_cols:
+                cursor.execute("ALTER TABLE network_observations ADD COLUMN dataset_source TEXT DEFAULT 'synthetic'")
+            if "network_data_source" not in net_cols:
+                cursor.execute("ALTER TABLE network_observations ADD COLUMN network_data_source TEXT DEFAULT 'synthetic'")
+            if "network_data_provenance" not in net_cols:
+                cursor.execute("ALTER TABLE network_observations ADD COLUMN network_data_provenance TEXT DEFAULT 'project_generated'")
+            if "network_data_scope" not in net_cols:
+                cursor.execute("ALTER TABLE network_observations ADD COLUMN network_data_scope TEXT DEFAULT 'synthetic_network_simulation'")
+            if "geo_source" not in net_cols:
+                cursor.execute("ALTER TABLE network_observations ADD COLUMN geo_source TEXT DEFAULT 'synthetic'")
+            if "asn_source" not in net_cols:
+                cursor.execute("ALTER TABLE network_observations ADD COLUMN asn_source TEXT DEFAULT 'synthetic'")
+
             conn.commit()
 
     def clear_all_tables(self) -> None:
@@ -263,16 +284,25 @@ class DatabaseManager:
                     VALUES (?, ?, ?, ?, ?)
                     """, (tx["txid"], out.get("address"), out.get("amount", 0), out.get("script_type", "P2WPKH"), out.get("is_change_ground_truth", 0)))
 
+            meta_ds = metadata.get("dataset_source", "synthetic") if metadata else "synthetic"
             for obs in observations:
+                d_src = obs.get("dataset_source", meta_ds)
+                n_src = obs.get("network_data_source", "synthetic")
+                n_prov = obs.get("network_data_provenance", "project_generated")
+                n_scope = obs.get("network_data_scope", "synthetic_network_simulation" if d_src != "synthetic" else "synthetic_network_telemetry")
+                g_src = obs.get("geo_source", "synthetic")
+                a_src = obs.get("asn_source", "synthetic")
+
                 cursor.execute("""
                 INSERT OR REPLACE INTO network_observations
-                (obs_id, timestamp, src_ip, dst_ip, src_port, dst_port, txid, geo_country, asn, time_delta, network_event_type)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (obs_id, timestamp, src_ip, dst_ip, src_port, dst_port, txid, geo_country, asn, time_delta, network_event_type, dataset_source, network_data_source, network_data_provenance, network_data_scope, geo_source, asn_source)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
                     obs["obs_id"], obs.get("timestamp"), obs.get("src_ip"), obs.get("dst_ip"),
                     obs.get("src_port", 8333), obs.get("dst_port", 8333), obs["txid"],
                     obs.get("geo_country", "UNKNOWN"), obs.get("asn", "UNKNOWN"),
-                    obs.get("time_delta", 0.0), obs.get("network_event_type", "tx_relay")
+                    obs.get("time_delta", 0.0), obs.get("network_event_type", "tx_relay"),
+                    d_src, n_src, n_prov, n_scope, g_src, a_src
                 ))
 
             if wallets:

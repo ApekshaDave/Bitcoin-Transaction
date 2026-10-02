@@ -16,12 +16,14 @@ class NetworkDataGenerator:
         self.obs_counter = 0
 
     def _generate_ip(self) -> str:
-        """Generates a synthetic IPv4 address (excluding private RFC1918 ranges)."""
-        b1 = random.choice([x for x in range(1, 223) if x not in [10, 127, 172, 192]])
-        b2 = random.randint(0, 255)
-        b3 = random.randint(0, 255)
-        b4 = random.randint(1, 254)
-        return f"{b1}.{b2}.{b3}.{b4}"
+        """Generates a synthetic IPv4 address using private RFC1918 ranges."""
+        choice = random.choice(["10", "172", "192"])
+        if choice == "10":
+            return f"10.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(1, 254)}"
+        elif choice == "172":
+            return f"172.{random.randint(16, 31)}.{random.randint(0, 255)}.{random.randint(1, 254)}"
+        else:
+            return f"192.168.{random.randint(0, 255)}.{random.randint(1, 254)}"
 
     def generate_observation_for_tx(
         self,
@@ -29,10 +31,12 @@ class NetworkDataGenerator:
         tx_timestamp: str,
         override_src_ip: str = None,
         override_dst_ip: str = None,
-        event_type: str = "tx_relay"
+        event_type: str = "tx_relay",
+        dataset_source: str = "sih_synthetic"
     ) -> Dict[str, Any]:
         """
         Generates a synthetic P2P network observation associated with a TXID.
+        Includes explicit provenance metadata.
         """
         self.obs_counter += 1
         obs_id = f"obs_{self.obs_counter}_{hashlib.md5(txid.encode('utf-8')).hexdigest()[:8]}"
@@ -57,5 +61,11 @@ class NetworkDataGenerator:
             "geo_country": country,
             "asn": asn,
             "time_delta": time_delta,
-            "network_event_type": event_type
+            "network_event_type": event_type,
+            "dataset_source": dataset_source,
+            "network_data_source": "synthetic",
+            "network_data_provenance": "project_generated",
+            "network_data_scope": "synthetic_network_simulation",
+            "geo_source": "synthetic",
+            "asn_source": "synthetic"
         }

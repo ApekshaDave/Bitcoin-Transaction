@@ -79,10 +79,24 @@ class PipelineService:
 
         dataset_dict = loader.load(time_step_limit=time_step_limit, max_txs=max_txs)
 
+        # Generate correlated synthetic network simulation observations for benchmark transactions
+        from data_generator.network_generator import NetworkDataGenerator
+        net_gen = NetworkDataGenerator()
+        obs_list = []
+        for tx in dataset_dict["transactions"][:100]:
+            obs = net_gen.generate_observation_for_tx(
+                txid=tx["txid"],
+                tx_timestamp="2026-10-02T00:00:00Z",
+                dataset_source=dataset_type
+            )
+            obs_list.append(obs)
+
+        dataset_dict["network_observations"] = obs_list
+
         self.db.clear_all_tables()
         self.db.save_transactions_and_observations(
             transactions=dataset_dict["transactions"],
-            observations=dataset_dict["network_observations"], # Empty for Elliptic
+            observations=obs_list,
             wallets=dataset_dict.get("wallets", []),
             metadata=dataset_dict.get("metadata", {})
         )
