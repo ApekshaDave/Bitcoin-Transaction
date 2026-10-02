@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  bitcoin-monitor-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bitcoin_monitor_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ENVIRONMENT=production
+    volumes:
+      - ./data:/app/data
+      - ./backend/bitcoin_monitor.db:/app/backend/bitcoin_monitor.db
+    restart: unless-stopped

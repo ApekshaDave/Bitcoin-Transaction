@@ -1,0 +1,17 @@
+{
+  "dataset_source": "synthetic",
+  "total_features": 7,
+  "feature_names": [
+    "feat_1",
+    "feat_2",
+    "feat_3",
+    "feat_4",
+    "feat_5",
+    "feat_6",
+    "feat_7"
+  ],
+  "scaling_method": "StandardScaler",
+  "train_samples": 42,
+  "test_samples": 42,
+  "temporal_split_time_step": 1
+}

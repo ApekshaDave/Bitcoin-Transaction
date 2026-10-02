@@ -1,0 +1,67 @@
+{
+  "dataset_name": "elliptic_v2",
+  "temporal_split": {
+    "train": [
+      1,
+      30
+    ],
+    "validation": [
+      31,
+      40
+    ],
+    "test": [
+      41,
+      49
+    ]
+  },
+  "test_labeled_samples": 9973,
+  "unsupervised_anomaly_baseline": {
+    "model": "Isolation Forest",
+    "category": "Unsupervised Anomaly Detection",
+    "roc_auc": 0.2439,
+    "pr_auc": 0.0316,
+    "precision": 0.0118,
+    "recall": 0.0782,
+    "f1": 0.0205,
+    "scientific_note": "Isolation Forest did not reliably rank illicit transactions above licit transactions on the held-out Elliptic++ test set under the current feature representation."
+  },
+  "supervised_classification_benchmarks": {
+    "logistic_regression": {
+      "model": "Logistic Regression",
+      "category": "Supervised Linear Classification Benchmark",
+      "roc_auc": 0.8242,
+      "pr_auc": 0.1557,
+      "precision": 0.1456,
+      "recall": 0.7023,
+      "f1": 0.2412,
+      "decision_threshold": 0.95
+    },
+    "random_forest": {
+      "model": "Random Forest",
+      "category": "Supervised Non-Linear Ensemble Benchmark",
+      "roc_auc": 0.8343,
+      "pr_auc": 0.63,
+      "precision": 0.9355,
+      "recall": 0.5534,
+      "f1": 0.6954,
+      "decision_threshold": 0.42
+    }
+  },
+  "unsupervised_entity_clustering": {
+    "model": "DBSCAN",
+    "category": "Unsupervised Entity/Behavior Clustering Baseline",
+    "eps": 0.5,
+    "min_samples": 5,
+    "clusters": 2,
+    "noise_ratio": 0.997,
+    "silhouette": -0.3275,
+    "davies_bouldin": 2.0615,
+    "calinski_harabasz": 2.5493,
+    "scientific_note": "DBSCAN identified candidate behavioral clusters, with cluster quality assessed using unsupervised validation metrics."
+  },
+  "terminology_standards": {
+    "anomaly_signal": "Unsupervised Outlier Ranking Signal",
+    "high_risk_flag": "High-risk investigative lead",
+    "entity_cluster": "Candidate behavioral cluster"
+  }
+}

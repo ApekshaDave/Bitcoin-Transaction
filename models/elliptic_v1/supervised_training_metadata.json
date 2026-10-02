@@ -1,0 +1,27 @@
+{
+  "dataset_name": "elliptic_v1",
+  "temporal_split": {
+    "train": [
+      1,
+      30
+    ],
+    "validation": [
+      31,
+      40
+    ],
+    "test": [
+      41,
+      49
+    ]
+  },
+  "samples": {
+    "train_labeled": 26905,
+    "validation_labeled": 9686,
+    "test_labeled": 9973
+  },
+  "thresholds_tuned_on_validation": {
+    "logistic_regression": 0.95,
+    "random_forest": 0.46
+  },
+  "trained_at": "2026-10-02 13:58:39"
+}

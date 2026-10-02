@@ -1,0 +1,437 @@
+{
+  "dataset": {
+    "name": "Elliptic++",
+    "version": "v2",
+    "transaction_rows": 203769,
+    "actor_rows": 1268260,
+    "time_steps": 49
+  },
+  "temporal_split": {
+    "train": [
+      1,
+      30
+    ],
+    "validation": [
+      31,
+      40
+    ],
+    "test": [
+      41,
+      49
+    ]
+  },
+  "isolation_forest": {
+    "parameters": {
+      "n_estimators": 300,
+      "contamination": "auto",
+      "random_state": 42
+    },
+    "train_samples": 123287,
+    "test_samples": 42166,
+    "evaluated_test_samples": 9973,
+    "roc_auc": 0.2439,
+    "pr_auc": 0.0316,
+    "precision": 0.0118,
+    "recall": 0.0782,
+    "f1": 0.0205,
+    "confusion_matrix": [
+      [
+        6006,
+        3443
+      ],
+      [
+        483,
+        41
+      ]
+    ]
+  },
+  "dbscan": {
+    "eps": 0.5,
+    "min_samples": 5,
+    "clusters": 2,
+    "noise_ratio": 0.997,
+    "silhouette": -0.3275,
+    "davies_bouldin": 2.0615,
+    "calinski_harabasz": 2.5493
+  },
+  "actor_layer": {
+    "addresses_processed": 1268260,
+    "feature_count": 56,
+    "sample_class_distribution": {
+      "3": 6808,
+      "2": 2994,
+      "1": 198
+    }
+  },
+  "pipeline_kpis": {
+    "total_transactions": 203769,
+    "avg_risk_score": 14.11,
+    "total_entities_clustered": 2,
+    "high_risk_alerts_count": 20,
+    "class_1_count": 4545,
+    "class_2_count": 42019,
+    "class_3_count": 157205
+  },
+  "alerts_sample": [
+    {
+      "alert_id": "ALT-02020",
+      "target_id": "TX_218264913.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 96.11339095108697,
+      "risk_score": 96.11339095108697,
+      "confidence": 90.83724511159905,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 96.1/100.",
+      "details": {
+        "anomaly_score": 0.9083724511159904,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-75285",
+      "target_id": "TX_73327121.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 95.85964494636856,
+      "risk_score": 95.85964494636856,
+      "confidence": 89.82226109272537,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 95.9/100.",
+      "details": {
+        "anomaly_score": 0.8982226109272538,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-29957",
+      "target_id": "TX_105433236.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 94.65903220342791,
+      "risk_score": 94.65903220342791,
+      "confidence": 85.01981012096283,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 94.7/100.",
+      "details": {
+        "anomaly_score": 0.8501981012096282,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-53647",
+      "target_id": "TX_76941945.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 93.8505653468282,
+      "risk_score": 93.8505653468282,
+      "confidence": 81.78594269456396,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 93.9/100.",
+      "details": {
+        "anomaly_score": 0.8178594269456396,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-74154",
+      "target_id": "TX_30751217.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 93.1462416701399,
+      "risk_score": 93.1462416701399,
+      "confidence": 78.96864798781078,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 93.1/100.",
+      "details": {
+        "anomaly_score": 0.7896864798781078,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-64111",
+      "target_id": "TX_114488570.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 92.97494818200309,
+      "risk_score": 92.97494818200309,
+      "confidence": 85.53556014109472,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 93.0/100.",
+      "details": {
+        "anomaly_score": 0.8553556014109471,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-15771",
+      "target_id": "TX_149699871.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 92.7204663496483,
+      "risk_score": 92.7204663496483,
+      "confidence": 91.66386835069234,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 92.7/100.",
+      "details": {
+        "anomaly_score": 0.9166386835069235,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-73155",
+      "target_id": "TX_55121162.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 91.88963422351415,
+      "risk_score": 91.88963422351415,
+      "confidence": 73.94221820130778,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 91.9/100.",
+      "details": {
+        "anomaly_score": 0.7394221820130779,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-39853",
+      "target_id": "TX_94824450.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 91.59781469429053,
+      "risk_score": 91.59781469429053,
+      "confidence": 72.77494008441327,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 91.6/100.",
+      "details": {
+        "anomaly_score": 0.7277494008441328,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-09461",
+      "target_id": "TX_105972828.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 90.14259966080176,
+      "risk_score": 90.14259966080176,
+      "confidence": 66.9540799504582,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 90.1/100.",
+      "details": {
+        "anomaly_score": 0.6695407995045819,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-25115",
+      "target_id": "TX_194376590.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 89.95245947122764,
+      "risk_score": 89.95245947122764,
+      "confidence": 66.19351919216172,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 90.0/100.",
+      "details": {
+        "anomaly_score": 0.6619351919216172,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-06545",
+      "target_id": "TX_13031319.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 89.2947445997138,
+      "risk_score": 89.2947445997138,
+      "confidence": 63.56265970610633,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 89.3/100.",
+      "details": {
+        "anomaly_score": 0.6356265970610633,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-41490",
+      "target_id": "TX_386157617.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 88.79791816823455,
+      "risk_score": 88.79791816823455,
+      "confidence": 73.28034568896663,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 88.8/100.",
+      "details": {
+        "anomaly_score": 0.7328034568896663,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-15639",
+      "target_id": "TX_9479179.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 88.25714110521741,
+      "risk_score": 88.25714110521741,
+      "confidence": 85.98539368917878,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 88.3/100.",
+      "details": {
+        "anomaly_score": 0.8598539368917878,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-11476",
+      "target_id": "TX_3336484.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 88.10585129440636,
+      "risk_score": 88.10585129440636,
+      "confidence": 58.807086484876606,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 88.1/100.",
+      "details": {
+        "anomaly_score": 0.588070864848766,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-86979",
+      "target_id": "TX_149158766.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 88.08131881888495,
+      "risk_score": 88.08131881888495,
+      "confidence": 76.22127801691299,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 88.1/100.",
+      "details": {
+        "anomaly_score": 0.76221278016913,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-46323",
+      "target_id": "TX_106320422.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 87.96916843428436,
+      "risk_score": 87.96916843428436,
+      "confidence": 84.88482272611844,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 88.0/100.",
+      "details": {
+        "anomaly_score": 0.8488482272611844,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-73703",
+      "target_id": "TX_106013566.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 87.6764166080835,
+      "risk_score": 87.6764166080835,
+      "confidence": 63.25695392993518,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 87.7/100.",
+      "details": {
+        "anomaly_score": 0.6325695392993518,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-32299",
+      "target_id": "TX_40757337.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 87.37522482118376,
+      "risk_score": 87.37522482118376,
+      "confidence": 55.884580591986236,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 87.4/100.",
+      "details": {
+        "anomaly_score": 0.5588458059198623,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    },
+    {
+      "alert_id": "ALT-66664",
+      "target_id": "TX_94890401.0",
+      "alert_type": "Isolation Forest Anomaly & High Risk Pattern",
+      "prioritization_score": 87.29403806001612,
+      "risk_score": 87.29403806001612,
+      "confidence": 71.2299693052208,
+      "detection_source": "Isolation Forest ML & Heuristics",
+      "timestamp": "2026-10-02 12:00:00",
+      "status": "OPEN",
+      "evidence_summary": "Anomalous transaction with risk score 87.3/100.",
+      "details": {
+        "anomaly_score": 0.7122996930522081,
+        "dbscan_cluster": "Inferred Behavioral Cluster",
+        "peeling_hops": 4,
+        "dataset_source": "elliptic_v2"
+      }
+    }
+  ]
+}
