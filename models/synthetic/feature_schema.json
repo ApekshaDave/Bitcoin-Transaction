@@ -11,7 +11,7 @@
     "feat_7"
   ],
   "scaling_method": "StandardScaler",
-  "train_samples": 42,
-  "test_samples": 42,
+  "train_samples": 72,
+  "test_samples": 72,
   "temporal_split_time_step": 1
 }

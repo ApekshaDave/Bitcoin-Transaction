@@ -1,16 +1,16 @@
 {
   "classification": {
     "precision": 1.0,
-    "recall": 0.2273,
-    "f1_score": 0.3704,
-    "roc_auc": 0.6455,
-    "pr_auc": 0.7251,
-    "evaluated_samples": 42,
+    "recall": 0.1818,
+    "f1_score": 0.3077,
+    "roc_auc": 0.6327,
+    "pr_auc": 0.5049,
+    "evaluated_samples": 72,
     "label_note": "Evaluated strictly on Class 1 (Illicit) vs Class 2 (Licit), Class 3 (Unknown) excluded"
   },
   "clustering": {
     "num_clusters": 3,
-    "noise_percentage": 2.381,
-    "silhouette_score": 0.5362
+    "noise_percentage": 1.3889,
+    "silhouette_score": 0.5737
   }
 }

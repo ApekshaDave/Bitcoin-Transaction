@@ -11,6 +11,7 @@ export default function Header({
 }) {
   const [query, setQuery] = useState('');
   const [timeStr, setTimeStr] = useState('');
+  const [isOnline, setIsOnline] = useState(typeof window !== 'undefined' ? navigator.onLine : true);
 
   useEffect(() => {
     const updateTime = () => {
@@ -19,7 +20,17 @@ export default function Header({
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   const handleSearchSubmit = (e) => {
@@ -108,7 +119,10 @@ export default function Header({
 
         {/* Clock & Status Dot */}
         <div className="flex items-center space-x-2 pl-2 border-l border-[#101C2E]">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="System Active"></span>
+          <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} title={isOnline ? 'Network Online' : 'Network Offline'}></span>
+          <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${isOnline ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'}`}>
+            {isOnline ? 'ONLINE' : 'OFFLINE'}
+          </span>
           <span className="text-slate-400 text-[11px]">{timeStr}</span>
         </div>
 

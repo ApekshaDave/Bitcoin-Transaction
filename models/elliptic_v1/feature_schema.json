@@ -169,7 +169,7 @@
     "feat_165"
   ],
   "scaling_method": "StandardScaler",
-  "train_samples": 1000,
-  "test_samples": 1000,
+  "train_samples": 500,
+  "test_samples": 500,
   "temporal_split_time_step": 1
 }

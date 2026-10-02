@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Shield, LayoutDashboard, ArrowLeftRight, Wallet, Users, 
   Wifi, ShieldAlert, Network, BarChart2, Cpu, GitFork, Settings 
 } from 'lucide-react';
 
 export default function Sidebar({ activeSection, setActiveSection, activeDataset = 'synthetic' }) {
+  const [isOnline, setIsOnline] = useState(typeof window !== 'undefined' ? navigator.onLine : true);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'transactions', label: 'Transactions', icon: ArrowLeftRight },
@@ -22,25 +35,25 @@ export default function Sidebar({ activeSection, setActiveSection, activeDataset
   const getModeBadge = () => {
     if (activeDataset === 'elliptic_v1') {
       return {
-        title: 'ELLIPTIC V1 MODE',
+        title: isOnline ? 'ONLINE • ELLIPTIC V1' : 'OFFLINE • ELLIPTIC V1',
         sub: 'Research Benchmark',
         color: 'text-[#22D3EE]',
-        dot: 'bg-[#22D3EE]'
+        dot: isOnline ? 'bg-[#22D3EE]' : 'bg-slate-400'
       };
     }
     if (activeDataset === 'elliptic_v2') {
       return {
-        title: 'ELLIPTIC++ MODE',
+        title: isOnline ? 'ONLINE • ELLIPTIC++' : 'OFFLINE • ELLIPTIC++',
         sub: 'Research Benchmark',
         color: 'text-[#A855F7]',
-        dot: 'bg-[#A855F7]'
+        dot: isOnline ? 'bg-[#A855F7]' : 'bg-slate-400'
       };
     }
     return {
-      title: 'OFFLINE MODE',
-      sub: 'SIH Synthetic Investigation',
-      color: 'text-[#22C55E]',
-      dot: 'bg-[#22C55E]'
+      title: isOnline ? 'SYSTEM ONLINE' : 'OFFLINE MODE',
+      sub: isOnline ? 'Network Active (SIH)' : 'Air-Gapped (SIH)',
+      color: isOnline ? 'text-[#22C55E]' : 'text-amber-400',
+      dot: isOnline ? 'bg-[#22C55E]' : 'bg-amber-400'
     };
   };
 
